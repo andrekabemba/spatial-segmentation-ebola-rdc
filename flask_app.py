@@ -1,15 +1,17 @@
+import os
 from flask import Flask, render_template, request
 import requests
 
 app = Flask(__name__)
 
-# URL de l'API FastAPI
-API_URL = "http://127.0.0.1:8000/predict"
+# URL de l'API FastAPI - Utilise une variable d'environnement sur Render ou localhost par défaut
+API_URL = os.environ.get("API_URL", "http://127.0.0.1:8000/predict")
 
 def check_backend():
     """Vérifie si le backend FastAPI est en ligne."""
     try:
-        response = requests.get("http://127.0.0.1:8000/health", timeout=2)
+        health_url = API_URL.replace("/predict", "/health")
+        response = requests.get(health_url, timeout=2)
         return response.status_code == 200
     except:
         return False
