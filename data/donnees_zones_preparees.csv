@@ -1,0 +1,13 @@
+health_zone;province;total_cases;total_deaths;population_density;forest_coverage_percent;water_proximity_index;latitude;longitude
+Beni;North Kivu;42;29;400;0.45;0.6;0.4911;29.473
+Butembo;North Kivu;9;5;1200;0.15;0.4;0.1416;29.2881
+Goma;North Kivu;0;0;2500;0.1;0.95;-1.6585;29.2185
+Kalunguta;North Kivu;1;0;60;0.75;0.5;0.28;29.35
+Komanda;Ituri;1;0;80;0.6;0.5;1.0508;30.0119
+Mabalako;North Kivu;90;65;55;0.85;0.6;0.4167;29.25
+Mambasa;North Kivu;0;0;25;0.92;0.7;1.3533;29.0536
+Mandima;Ituri;11;5;30;0.88;0.6;1.1522;29.0718
+Masereka;North Kivu;1;1;90;0.3;0.3;0.18;29.15
+Musienene;North Kivu;1;1;110;0.35;0.4;0.1;29.2
+Oicha;North Kivu;3;1;120;0.8;0.5;0.6936;29.5218
+Tchomia;Ituri;2;1;220;0.12;0.98;1.4822;30.4319
