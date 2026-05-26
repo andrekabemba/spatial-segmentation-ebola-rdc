@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MediExpert | Système Expert Médical Global</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2864/2864248.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #111827 0%, #000000 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .title-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+        }
+
+        .symptom-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        @media (hover: hover) {
+            .symptom-card:hover {
+                transform: translateY(-3px);
+                background: rgba(59, 130, 246, 0.1);
+            }
+        }
+
+        .symptom-card.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+    </style>
+</head>
+<body class="p-2 md:p-4 flex flex-col items-center">
+    <div class="w-full max-w-full sm:max-w-2xl md:max-w-3xl">
+        <!-- Header Compact & Responsive -->
+        <header class="text-center mb-4 md:mb-6">
+            <div class="flex items-center justify-center mb-2">
+                <i class="fas fa-heart-pulse text-3xl md:text-5xl text-blue-500 animate-pulse"></i>
+            </div>
+            <h1 class="text-xl sm:text-2xl md:text-4xl font-bold title-font text-blue-500 mb-1 tracking-widest uppercase">
+                MEDI-EXPERT
+            </h1>
+            <p class="text-gray-400 text-[8px] sm:text-[10px] md:text-xs uppercase tracking-tighter">Diagnostic Médical Intelligent</p>
+            <div class="h-0.5 w-8 sm:w-12 bg-blue-500 mx-auto mt-1 sm:mt-2 rounded-full"></div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="space-y-3 md:space-y-4">
+            <!-- Symptom Selection Section -->
+            <section class="glass p-3 sm:p-4 border border-gray-800">
+                <h2 class="text-[10px] sm:text-xs md:text-sm font-bold mb-3 sm:mb-4 flex items-center justify-center text-gray-300 uppercase tracking-wider">
+                    <i class="fas fa-clipboard-check text-blue-500 mr-2"></i>
+                    Symptômes observés
+                </h2>
+                
+                <!-- Responsive Grid: 2 cols mobile, 3 tablet, 4 desktop -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2" id="symptom-container">
+                    {% for symptom in symptoms %}
+                    <div class="symptom-card glass py-2 px-1 text-center border border-gray-800 rounded-md select-none touch-manipulation" 
+                         onclick="toggleSymptom(this, '{{ symptom }}')">
+                        <span class="text-[9px] sm:text-[10px] md:text-xs font-medium">{{ symptom }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-5 sm:mt-6 flex justify-center">
+                    <button onclick="runDiagnosis()" 
+                            class="bg-blue-600 active:bg-blue-700 hover:bg-blue-500 text-white px-5 sm:px-8 py-2 rounded-full text-[10px] sm:text-xs font-black transition-all transform active:scale-95 pulse flex items-center shadow-lg shadow-blue-900/20">
+                        <i class="fas fa-stethoscope mr-2"></i> ANALYSER
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="hidden space-y-2 md:space-y-3">
+                <div class="flex items-center justify-center space-x-2 sm:space-x-3 mb-1 sm:mb-2">
+                    <div class="h-[1px] bg-gray-800 flex-grow"></div>
+                    <h2 class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 flex items-center">
+                        Rapport d'Analyse
+                    </h2>
+                    <div class="h-[1px] bg-gray-800 flex-grow"></div>
+                </div>
+
+                <div id="loading" class="hidden text-center py-3 sm:py-4">
+                    <i class="fas fa-spinner fa-spin text-lg sm:text-xl text-blue-500 mb-2"></i>
+                    <p class="text-[9px] sm:text-[10px] text-gray-500 italic">Analyse en cours...</p>
+                </div>
+
+                <!-- Responsive Results Grid: 1 col mobile, 2 cols tablet/desktop -->
+                <div id="results-content" class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pb-6 md:pb-8">
+                    <!-- Compact Cards will appear here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer Mini -->
+        <footer class="mt-6 sm:mt-8 text-center text-gray-700 text-[7px] sm:text-[8px] border-t border-gray-900 pt-3 sm:pt-4 px-4 leading-tight">
+            <p>MEDI-EXPERT AI &copy; 2026. Simulation logicielle préliminaire. Ne remplace pas un professionnel de santé. En cas de gravité, rendez-vous au centre hospitalier le plus proche.</p>
+        </footer>
+    </div>
+
+    <script>
+        let selectedSymptoms = [];
+
+        function toggleSymptom(element, symptom) {
+            if (selectedSymptoms.includes(symptom)) {
+                selectedSymptoms = selectedSymptoms.filter(s => s !== symptom);
+                element.classList.remove('selected');
+            } else {
+                selectedSymptoms.push(symptom);
+                element.classList.add('selected');
+            }
+        }
+
+        async function runDiagnosis() {
+            if (selectedSymptoms.length === 0) {
+                alert("Sélectionnez au moins un symptôme.");
+                return;
+            }
+
+            const resultsSection = document.getElementById('results-section');
+            const resultsContent = document.getElementById('results-content');
+            const loading = document.getElementById('loading');
+            
+            resultsSection.classList.remove('hidden');
+            resultsContent.innerHTML = '';
+            loading.classList.remove('hidden');
+
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            try {
+                const formData = new FormData();
+                selectedSymptoms.forEach(s => formData.append('selected_symptoms', s));
+
+                const response = await fetch('/diagnose', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                loading.classList.add('hidden');
+                
+                if (data.results.length === 0) {
+                    resultsContent.innerHTML = `
+                        <div class="col-span-full glass p-4 border-yellow-500/20 text-center">
+                            <p class="text-yellow-600 text-[10px] font-bold uppercase">Aucune correspondance</p>
+                        </div>
+                    `;
+                } else {
+                    data.results.forEach(disease => {
+                        const gravityColor = disease.gravity === 'Grave' ? 'text-red-500' : 
+                                            (disease.gravity === 'Modérée' ? 'text-orange-500' : 'text-green-500');
+
+                        resultsContent.innerHTML += `
+                            <div class="glass p-3 border border-gray-800 flex flex-col hover:border-blue-500/20 transition-all">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h3 class="text-sm font-black text-white truncate mr-2">${disease.name}</h3>
+                                    <span class="text-sm font-black text-blue-500">${disease.confidence}%</span>
+                                </div>
+                                
+                                <div class="flex flex-wrap gap-1 mb-2">
+                                    <span class="text-[8px] font-bold uppercase tracking-tighter ${gravityColor}">${disease.gravity}</span>
+                                    <div class="h-3 w-[1px] bg-gray-800 mx-1"></div>
+                                    ${disease.matched_symptoms.slice(0,3).map(s => `
+                                        <span class="text-[7px] text-gray-500">${s}</span>`).join('<span class="text-gray-800">·</span>')}
+                                </div>
+
+                                <p class="text-[9px] text-gray-400 mb-2 leading-snug line-clamp-2">
+                                    ${disease.description}
+                                </p>
+
+                                <div class="mt-auto pt-2 border-t border-gray-800/50">
+                                    <p class="text-[9px] text-blue-400 leading-tight">
+                                        <span class="font-bold text-blue-300">Conseil:</span> ${disease.advice}
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                loading.classList.add('hidden');
+                resultsContent.innerHTML = '<p class="text-red-500 text-center text-[10px] col-span-full">Erreur.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
